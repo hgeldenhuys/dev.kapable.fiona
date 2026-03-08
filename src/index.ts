@@ -306,23 +306,42 @@ function layout(title: string, content: string, opts: { wide?: boolean; descript
 
     /* ── Tokens ── */
     :root {
-      --bg:        #fafaf8;
-      --ink:       #1a1a1a;
-      --muted:     #8a8578;
-      --rule:      #e0ddd6;
-      --gold:      #b8a88a;
-      --gold-dark: #9a8a72;
-      --serif:     Georgia, 'Palatino Linotype', Palatino, serif;
-      --sans:      'Helvetica Neue', Arial, sans-serif;
+      /* Colors - Literary/Parchment Palette */
+      --bg:        #f7f5f0;
+      --ink:       #2d2d2d;
+      --muted:     #7a7a7a;
+      --rule:      #dcdad5;
+      --gold:      #a58f70;
+      --gold-dark: #8c7659;
+      
+      /* Typography - Musical Rhythm */
+      --font-heading: 'Playfair Display', 'Georgia', serif;
+      --font-body:    'Crimson Text', 'Georgia', serif;
+      --font-sans:    'Helvetica Neue', Arial, sans-serif;
+      --serif: var(--font-body);
+      --sans: var(--font-sans);
+      
+      --step--1: 0.8rem;
+      --step-0:  1.05rem; /* Base */
+      --step-1:  1.3rem;
+      --step-2:  1.6rem;
+      --step-3:  2.0rem;
+      --step-4:  2.5rem;
+      
+      /* Spacing Scale */
+      --space-xs: 0.5rem;
+      --space-sm: 1rem;
+      --space-md: 2rem;
+      --space-lg: 4rem;
     }
 
     /* ── Base ── */
     html { font-size: 17px; scroll-behavior: smooth; }
     body {
-      font-family: var(--serif);
+      font-family: var(--font-body);
       color: var(--ink);
       background: var(--bg);
-      line-height: 1.75;
+      line-height: 1.7;
       -webkit-font-smoothing: antialiased;
     }
 
@@ -331,36 +350,30 @@ function layout(title: string, content: string, opts: { wide?: boolean; descript
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 0.25rem 1.25rem;
-      padding: 1.25rem 2.5rem;
+      gap: 0.5rem var(--space-md);
+      padding: var(--space-md) var(--space-lg);
       border-bottom: 1px solid var(--rule);
       background: var(--bg);
     }
     .site-nav .brand {
-      font-family: var(--serif);
-      font-size: 1.25rem;
+      font-family: var(--font-heading);
+      font-size: var(--step-1);
       font-style: italic;
       color: var(--ink);
       text-decoration: none;
-      letter-spacing: 0.01em;
       margin-right: auto;
     }
     .site-nav a {
-      font-family: var(--sans);
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
+      font-family: var(--font-sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
       color: var(--muted);
       text-decoration: none;
-      padding-bottom: 2px;
       border-bottom: 1px solid transparent;
       transition: color 0.2s, border-color 0.2s;
     }
-    .site-nav a:hover {
-      color: var(--ink);
-      border-bottom-color: var(--gold);
-    }
-    .site-nav a.nav-active {
+    .site-nav a:hover, .site-nav a.nav-active {
       color: var(--ink);
       border-bottom-color: var(--gold);
     }
@@ -373,10 +386,16 @@ function layout(title: string, content: string, opts: { wide?: boolean; descript
     }
 
     /* ── Typography ── */
-    h1 { font-size: 2.4rem; font-weight: normal; line-height: 1.2; letter-spacing: -0.01em; }
-    h2 { font-size: 1.5rem; font-weight: normal; letter-spacing: 0.01em; margin-bottom: 1.25rem; }
-    h3 { font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; }
-    p { margin-bottom: 1.25rem; }
+    h1, h2, h3, h4 {
+      font-family: var(--font-heading);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+      margin-bottom: var(--space-sm);
+    }
+    h1 { font-size: var(--step-4); line-height: 1.1; }
+    h2 { font-size: var(--step-3); color: var(--gold-dark); }
+    h3 { font-family: var(--font-sans); font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: var(--space-xs); }
+    p { margin-bottom: var(--space-sm); }
     p:last-child { margin-bottom: 0; }
 
     /* ── Links ── */
