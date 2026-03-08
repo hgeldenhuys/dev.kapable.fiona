@@ -1,5 +1,92 @@
 const PORT = parseInt(process.env.PORT || "3027", 10);
 
+// ─── Repertoire Data ──────────────────────────────────────────────────────────
+
+interface Piece {
+  composer: string;
+  composerKey: string;
+  title: string;
+  period: string;
+  moods: string[];
+  notes: string;
+  hasVideo?: boolean;
+}
+
+const REPERTOIRE: Piece[] = [
+  {
+    composer: "J.S. Bach",
+    composerKey: "bach",
+    title: "Partita No. 6 in E minor, BWV 830",
+    period: "baroque",
+    moods: ["contemplative", "virtuosic"],
+    notes: "The final and most monumental of Bach's six keyboard partitas. Its seven movements trace an arc from the introspective Toccata through the brilliant Corrente and Sarabande to the exuberant concluding Gigue.",
+  },
+  {
+    composer: "Beethoven",
+    composerKey: "beethoven",
+    title: "Piano Concerto No. 4 in G major, Op. 58",
+    period: "classical",
+    moods: ["lyrical", "dramatic"],
+    notes: "Beethoven's most poetic concerto opens with a daring innovation: the piano speaks first, alone, in a gentle G major chord. The dialogue between soloist and orchestra that follows is among the most intimate in the concerto repertoire.",
+  },
+  {
+    composer: "Bach–Busoni",
+    composerKey: "bach",
+    title: "Chaconne in D minor, BWV 1004",
+    period: "baroque",
+    moods: ["virtuosic", "contemplative"],
+    notes: "Busoni's transcription of Bach's monumental violin Chaconne transforms a single melodic line into a full pianistic universe. The work's 32 variations build an architecture of extraordinary emotional and technical breadth.",
+  },
+  {
+    composer: "Beethoven",
+    composerKey: "beethoven",
+    title: "Piano Sonata No. 23 \u2018Appassionata\u2019, Op. 57",
+    period: "classical",
+    moods: ["dramatic", "virtuosic"],
+    notes: "The Appassionata stands as one of Beethoven's most turbulent and emotionally extreme works. Its three movements move from stormy darkness through a serene set of variations to a whirlwind finale.",
+  },
+  {
+    composer: "J.S. Bach",
+    composerKey: "bach",
+    title: "The Art of Fugue, BWV 1080",
+    period: "baroque",
+    moods: ["contemplative"],
+    notes: "Bach's ultimate exploration of contrapuntal possibility. Each fugue and canon is built on a single theme, yet the variety of expression Bach achieves is limitless — from the simplest two-voice texture to the most complex four-voice inversions.",
+  },
+  {
+    composer: "Julie Th\u00e9riault",
+    composerKey: "theriault",
+    title: "DENSE",
+    period: "contemporary",
+    moods: ["experimental"],
+    notes: "A collaborative work created with Paul \u00c7elebi, exploring the boundaries between acoustic and electronic sound worlds. Recorded at Orford Music.",
+  },
+  {
+    composer: "Schubert",
+    composerKey: "schubert",
+    title: "Impromptu in G-flat major, D. 899 No. 3",
+    period: "romantic",
+    moods: ["lyrical"],
+    notes: "One of Schubert's most beloved piano works, built on a simple, singing melody that unfolds with an almost vocal quality. The flowing arpeggios create a texture of extraordinary warmth.",
+  },
+  {
+    composer: "Liszt",
+    composerKey: "liszt",
+    title: "Transcendental \u00c9tude",
+    period: "romantic",
+    moods: ["virtuosic"],
+    notes: "Liszt's études are among the most technically demanding works in the piano repertoire, yet they are far more than mere displays of virtuosity — each tells a distinct musical story.",
+  },
+  {
+    composer: "Couperin",
+    composerKey: "couperin",
+    title: "Selected Ordres",
+    period: "baroque",
+    moods: ["contemplative"],
+    notes: "Couperin's ordres (suites) are jewel-like collections of character pieces, each with evocative titles that hint at scenes, characters, or emotions from French court life.",
+  },
+];
+
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 function layout(title: string, content: string, opts: { wide?: boolean } = {}): string {
@@ -252,6 +339,139 @@ function layout(title: string, content: string, opts: { wide?: boolean } = {}): 
       .hero { padding: 3rem 0.5rem 2.5rem; }
       .hero h1 { font-size: 2rem; }
     }
+
+    /* ── Repertoire page ── */
+    .page-header { margin-bottom: 2.5rem; }
+    .page-header h1 { font-size: 2.2rem; margin-bottom: 0.4rem; }
+    .page-subtitle {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .filter-bar {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 1.1rem 0;
+      margin-bottom: 2.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem 2.5rem;
+    }
+    .filter-group { display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+    .filter-group-label {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-right: 0.2rem;
+    }
+    .filter-btn {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.2rem 0.55rem;
+      border-radius: 2px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .filter-btn:hover { color: var(--ink); }
+    .filter-btn.active { color: var(--ink); background: #ece9e3; font-weight: 600; }
+    .piece-count {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 1.5rem;
+    }
+    .piece-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .piece-card {
+      padding: 1.6rem 1.6rem 1.4rem;
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      background: #fff;
+    }
+    .piece-composer {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .piece-title {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: normal;
+      line-height: 1.35;
+      color: var(--ink);
+      margin-bottom: 0.85rem;
+    }
+    .piece-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1rem; }
+    .piece-tag {
+      font-family: var(--sans);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.18rem 0.5rem;
+      border-radius: 20px;
+      border: 1px solid var(--rule);
+      color: var(--muted);
+    }
+    .piece-tag.period { background: #f5f3ef; }
+    .piece-tag.mood { color: var(--gold-dark); border-color: var(--gold); }
+    .piece-notes {
+      font-size: 0.9rem;
+      color: #4a4740;
+      line-height: 1.72;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 0.6rem;
+    }
+    .piece-notes.expanded {
+      display: block;
+      -webkit-line-clamp: unset;
+    }
+    .notes-toggle {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+    .notes-toggle:hover { text-decoration: underline; }
+    .piece-listen {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      text-decoration: none;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 1px;
+    }
+    .piece-listen:hover { color: var(--ink); border-color: var(--ink); }
+    @media (max-width: 720px) {
+      .filter-bar { gap: 0.75rem 1.5rem; }
+      .piece-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -394,10 +614,117 @@ function renderAbout(): string {
 }
 
 function renderRepertoire(): string {
+  let cards = "";
+  for (const piece of REPERTOIRE) {
+    let moodTags = "";
+    for (const m of piece.moods) {
+      moodTags += `<span class="piece-tag mood">${m[0].toUpperCase() + m.slice(1)}</span>`;
+    }
+    const periodLabel = piece.period[0].toUpperCase() + piece.period.slice(1);
+    const listenLink = piece.hasVideo
+      ? `<a href="/listening-room" class="piece-listen">Listen &rarr;</a>`
+      : "";
+
+    cards += `
+    <article class="piece-card"
+      data-period="${piece.period}"
+      data-moods="${piece.moods.join(",")}"
+      data-composer="${piece.composerKey}"
+    >
+      <p class="piece-composer">${piece.composer}</p>
+      <p class="piece-title">${piece.title}</p>
+      <div class="piece-tags">
+        <span class="piece-tag period">${periodLabel}</span>
+        ${moodTags}
+      </div>
+      <p class="piece-notes">${piece.notes}</p>
+      <button class="notes-toggle">Read more</button>
+      ${listenLink}
+    </article>`;
+  }
+
   return layout("Repertoire", `
-    <h1>Repertoire Library</h1>
-    <p>Explore Fiona's recorded and performed repertoire.</p>
-  `);
+    <div class="page-header">
+      <h1>Repertoire Library</h1>
+      <p class="page-subtitle">A living catalog of the music I perform and teach</p>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-group">
+        <span class="filter-group-label">Period</span>
+        <button class="filter-btn active" data-filter-group="period" onclick="setFilter('period','all',this)">All</button>
+        <button class="filter-btn" data-filter-group="period" onclick="setFilter('period','baroque',this)">Baroque</button>
+        <button class="filter-btn" data-filter-group="period" onclick="setFilter('period','classical',this)">Classical</button>
+        <button class="filter-btn" data-filter-group="period" onclick="setFilter('period','romantic',this)">Romantic</button>
+        <button class="filter-btn" data-filter-group="period" onclick="setFilter('period','contemporary',this)">Contemporary</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Mood</span>
+        <button class="filter-btn active" data-filter-group="mood" onclick="setFilter('mood','all',this)">All</button>
+        <button class="filter-btn" data-filter-group="mood" onclick="setFilter('mood','contemplative',this)">Contemplative</button>
+        <button class="filter-btn" data-filter-group="mood" onclick="setFilter('mood','virtuosic',this)">Virtuosic</button>
+        <button class="filter-btn" data-filter-group="mood" onclick="setFilter('mood','lyrical',this)">Lyrical</button>
+        <button class="filter-btn" data-filter-group="mood" onclick="setFilter('mood','dramatic',this)">Dramatic</button>
+        <button class="filter-btn" data-filter-group="mood" onclick="setFilter('mood','experimental',this)">Experimental</button>
+      </div>
+      <div class="filter-group">
+        <span class="filter-group-label">Composer</span>
+        <button class="filter-btn active" data-filter-group="composer" onclick="setFilter('composer','all',this)">All</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','bach',this)">Bach</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','beethoven',this)">Beethoven</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','schubert',this)">Schubert</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','liszt',this)">Liszt</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','couperin',this)">Couperin</button>
+        <button class="filter-btn" data-filter-group="composer" onclick="setFilter('composer','theriault',this)">Th&eacute;riault</button>
+      </div>
+    </div>
+
+    <p class="piece-count">${REPERTOIRE.length} pieces</p>
+
+    <div class="piece-grid">
+      ${cards}
+    </div>
+
+    <script>
+      var filterState = { period: 'all', mood: 'all', composer: 'all' };
+
+      function applyFilters() {
+        var cards = document.querySelectorAll('.piece-card');
+        var visible = 0;
+        for (var i = 0; i < cards.length; i++) {
+          var card = cards[i];
+          var period = card.dataset.period;
+          var moods = card.dataset.moods.split(',');
+          var composer = card.dataset.composer;
+          var show = (filterState.period === 'all' || period === filterState.period) &&
+                     (filterState.mood === 'all' || moods.indexOf(filterState.mood) !== -1) &&
+                     (filterState.composer === 'all' || composer === filterState.composer);
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        }
+        var countEl = document.querySelector('.piece-count');
+        if (countEl) countEl.textContent = visible + ' piece' + (visible !== 1 ? 's' : '');
+      }
+
+      function setFilter(group, value, btn) {
+        filterState[group] = value;
+        var btns = document.querySelectorAll('[data-filter-group="' + group + '"]');
+        for (var i = 0; i < btns.length; i++) {
+          btns[i].classList.toggle('active', btns[i] === btn);
+        }
+        applyFilters();
+      }
+
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('notes-toggle')) {
+          var btn = e.target;
+          var notes = btn.previousElementSibling;
+          var expanded = notes.classList.toggle('expanded');
+          btn.textContent = expanded ? 'Show less' : 'Read more';
+        }
+      });
+    </script>
+  `, { wide: true });
 }
 
 function renderListeningRoom(): string {
