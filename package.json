@@ -1,0 +1,9 @@
+{
+  "name": "dev.kapable.fiona",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts"
+  }
+}

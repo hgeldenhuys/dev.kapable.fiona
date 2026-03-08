@@ -1,0 +1,23 @@
+{
+  "project": {
+    "id": "38f3b713-0491-43e5-b512-7632f50b5325",
+    "name": "Fiona Wu Artist Site",
+    "slug": "fiona-wu",
+    "org_id": "1269c487-dfb7-461a-ac6d-8e9d1d038331"
+  },
+  "api": {
+    "base_url": "https://api.kapable.dev",
+    "live_key_prefix": "sk_live_b4a6",
+    "note": "Full keys stored in .env — see INFRASTRUCTURE_RUNBOOK.md"
+  },
+  "tables": [
+    "fiona_press_quotes",
+    "fiona_testimonials",
+    "fiona_media",
+    "fiona_repertoire",
+    "fiona_events",
+    "fiona_posts",
+    "fiona_inquiries"
+  ],
+  "seeded": true
+}
