@@ -143,6 +143,143 @@ const VIDEOS: Video[] = [
   },
 ];
 
+// ─── Journal / Blog Data ──────────────────────────────────────────────────────
+
+interface Post {
+  title: string;
+  slug: string;
+  category: "pedagogy" | "performance_psychology" | "concert_reflections";
+  date: string; // ISO date string
+  excerpt: string;
+  content: string; // markdown
+}
+
+const CATEGORY_LABELS: Record<Post["category"], string> = {
+  pedagogy: "Pedagogy",
+  performance_psychology: "Performance Psychology",
+  concert_reflections: "Concert Reflections",
+};
+
+const POSTS: Post[] = [
+  {
+    title: "First Steps at the Piano: A Beginner's Guide to Finding Your Sound",
+    slug: "first-steps-at-the-piano",
+    category: "pedagogy",
+    date: "2026-02-15",
+    excerpt:
+      "Every pianist's journey begins with a single note. Here's how to make that first note truly yours.",
+    content: `Every pianist's journey begins with a single note. But what makes that note *yours*?
+
+In my years of teaching at the Conservatoire de Montréal, I've noticed that beginners often focus exclusively on getting the "right" notes. They count beats, follow fingerings, and measure their progress by how many pieces they can play. These are important skills, but they miss something essential.
+
+## Listen Before You Play
+
+Before you touch the keys, listen. Not to a recording — to the silence in the room. Feel the weight of your hands. Notice your breath. This isn't meditation homework — it's the foundation of musical awareness.
+
+When you finally press a key, listen to the full life of that sound. The attack, the sustain, the decay. A single C can sound warm or cold, singing or percussive, depending on how you approach it.
+
+## The Myth of "Natural Talent"
+
+I often hear adults say they're "too old" to start piano, or that they don't have "the gift." This is a myth that serves no one. Music is a language, and like any language, it can be learned at any age.
+
+What matters isn't talent — it's curiosity. Are you willing to sit with a phrase until it speaks to you? Are you willing to play badly, openly, without pretense? That willingness is worth more than any natural facility.
+
+## Three Practices for Your First Month
+
+**1. The One-Note Exercise:** Play a single note 20 different ways. Vary the speed, the weight, the angle. Listen to each one. Which sounds most like you?
+
+**2. Sing, Then Play:** Before learning a new phrase, sing it first (even badly). Your voice knows musical shape intuitively. Let your fingers follow your voice, not the other way around.
+
+**3. The Question Game:** After playing a passage, ask yourself: What did I just say? If you can't answer, you were reading notes, not making music. Go back and find the meaning.
+
+## Presence, Not Perfection
+
+The paradox of learning piano is that the harder you try to be perfect, the further you get from music. Music lives in the space between control and surrender.
+
+As I tell my students: What would you play if you weren't afraid?
+
+Start there.`,
+  },
+  {
+    title: "On Performance Anxiety: Finding Freedom in Vulnerability",
+    slug: "on-performance-anxiety",
+    category: "performance_psychology",
+    date: "2026-01-20",
+    excerpt:
+      "The stage can feel like a place of judgment. But what if it could be a place of connection instead?",
+    content: `For years, I carried performance anxiety like a secret. Every time I walked on stage, I felt the weight of expectation — from the audience, from my teachers, from myself. The fear wasn't of wrong notes. It was of being truly heard.
+
+## The Mask We Wear
+
+Many performers develop a kind of armor. We hide behind technical perfection, behind interpretive conventions, behind the comfort of doing things "correctly." But the audience doesn't come to hear correctness. They come to hear something real.
+
+The turning point for me came during a masterclass with a teacher who simply said: "Stop trying to impress me. Tell me something."
+
+## Vulnerability as Strength
+
+What I've learned, through years of performing and teaching, is that the moments of greatest vulnerability are also the moments of greatest art. When you stop trying to prove yourself and start trying to communicate, something shifts.
+
+The audience feels it. You feel it. The music comes alive in a way that technical perfection alone can never achieve.
+
+## A Practice for the Stage
+
+Before your next performance, try this: instead of running through your piece one more time, sit quietly and ask yourself — why does this music matter to me? What do I want to share?
+
+Then walk on stage with that intention. Not to be perfect. Not to impress. Just to share something true.
+
+The paradox is real: you must stop pretending in order to be truly heard.`,
+  },
+  {
+    title: "Bach and the Architecture of Emotion",
+    slug: "bach-architecture-of-emotion",
+    category: "concert_reflections",
+    date: "2025-12-10",
+    excerpt:
+      "How Bach's counterpoint creates an emotional architecture that speaks across centuries.",
+    content: `Bach does not tell you how to feel. He builds you a room and invites you to inhabit it.
+
+## Counterpoint as Conversation
+
+When I play the Art of Fugue, I think of it as four voices in dialogue — each with its own character, its own insistence. The bass line is patient, immovable. The soprano is questioning, restless. The inner voices mediate, translate, console. Together they create something no single voice could achieve alone.
+
+## Emotion Without Sentimentality
+
+What moves me about Bach is that his music is deeply emotional without being sentimental. There's no wallowing, no self-indulgence. The emotion lives in the *structure* — in the way a fugue subject transforms, inverts, combines with itself. It is architecture that breathes.
+
+Playing Bach is a constant negotiation between control and feeling. The moment you impose too much feeling, the structure collapses. The moment you retreat into pure technique, the music goes cold. The art is finding the threshold — where precision and presence become the same thing.`,
+  },
+];
+
+// ─── Markdown Renderer ────────────────────────────────────────────────────────
+
+function renderMarkdown(md: string): string {
+  // Split into blocks on blank lines
+  const blocks = md.split(/\n{2,}/);
+  let html = "";
+  for (const block of blocks) {
+    const trimmed = block.trim();
+    if (!trimmed) continue;
+
+    // Heading (## only)
+    if (trimmed.startsWith("## ")) {
+      const text = inlineMarkdown(trimmed.slice(3));
+      html += `<h2>${text}</h2>\n`;
+    } else {
+      const text = inlineMarkdown(trimmed.replace(/\n/g, " "));
+      html += `<p>${text}</p>\n`;
+    }
+  }
+  return html;
+}
+
+function inlineMarkdown(text: string): string {
+  // **bold**
+  text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+  // *italic*
+  text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
+  return text;
+}
+
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 function layout(title: string, content: string, opts: { wide?: boolean } = {}): string {
@@ -973,17 +1110,241 @@ function renderListeningRoom(): string {
   `, { wide: true });
 }
 
-function renderJournal(): string {
+function renderJournal(activeCategory: string = "all"): string {
+  const sorted = [...POSTS].sort((a, b) => b.date.localeCompare(a.date));
+
+  let postCards = "";
+  for (const post of sorted) {
+    const visible = activeCategory === "all" || post.category === activeCategory;
+    const displayDate = new Date(post.date).toLocaleDateString("en-CA", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    postCards += `
+    <article class="journal-card" data-category="${post.category}" style="${visible ? "" : "display:none"}">
+      <div class="journal-meta-row">
+        <time class="journal-date">${displayDate}</time>
+        <span class="journal-cat-tag">${CATEGORY_LABELS[post.category]}</span>
+      </div>
+      <h2 class="journal-title"><a href="/journal/${post.slug}">${post.title}</a></h2>
+      <p class="journal-excerpt">${post.excerpt}</p>
+      <a href="/journal/${post.slug}" class="journal-read-more">Read &rarr;</a>
+    </article>`;
+  }
+
+  const css = `
+    /* ── Journal list ── */
+    .journal-subtitle {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      margin-bottom: 2.5rem;
+    }
+    .journal-filter-bar {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 1.1rem 0;
+      margin-bottom: 2.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.2rem;
+    }
+    .journal-list { display: flex; flex-direction: column; gap: 2.5rem; }
+    .journal-card {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 2.5rem;
+    }
+    .journal-card:last-child { border-bottom: none; }
+    .journal-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.6rem;
+    }
+    .journal-date {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .journal-cat-tag {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 0.15rem 0.55rem;
+    }
+    .journal-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: normal;
+      line-height: 1.3;
+      margin-bottom: 0.65rem;
+    }
+    .journal-title a { color: var(--ink); text-decoration: none; }
+    .journal-title a:hover { color: var(--gold-dark); }
+    .journal-excerpt {
+      font-size: 1rem;
+      color: #4a4740;
+      line-height: 1.75;
+      margin-bottom: 0.85rem;
+    }
+    .journal-read-more {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      text-decoration: none;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 1px;
+    }
+    .journal-read-more:hover { color: var(--ink); border-color: var(--ink); }
+  `;
+
   return layout("Journal", `
-    <h1>Journal</h1>
-    <p>Reflections on music, practice, and teaching.</p>
+    <style>${css}</style>
+    <div class="page-header">
+      <h1>Journal</h1>
+      <p class="journal-subtitle">Reflections on music, practice, and the inner life of performers</p>
+    </div>
+
+    <div class="journal-filter-bar">
+      <button class="filter-btn ${activeCategory === "all" ? "active" : ""}" onclick="jFilter('all',this)">All</button>
+      <button class="filter-btn ${activeCategory === "pedagogy" ? "active" : ""}" onclick="jFilter('pedagogy',this)">Pedagogy</button>
+      <button class="filter-btn ${activeCategory === "performance_psychology" ? "active" : ""}" onclick="jFilter('performance_psychology',this)">Performance Psychology</button>
+      <button class="filter-btn ${activeCategory === "concert_reflections" ? "active" : ""}" onclick="jFilter('concert_reflections',this)">Concert Reflections</button>
+    </div>
+
+    <div class="journal-list">
+      ${postCards}
+    </div>
+
+    <script>
+      function jFilter(cat, btn) {
+        var cards = document.querySelectorAll('.journal-card');
+        for (var i = 0; i < cards.length; i++) {
+          var show = cat === 'all' || cards[i].dataset.category === cat;
+          cards[i].style.display = show ? '' : 'none';
+        }
+        var btns = document.querySelectorAll('.journal-filter-bar .filter-btn');
+        for (var j = 0; j < btns.length; j++) {
+          btns[j].classList.toggle('active', btns[j] === btn);
+        }
+      }
+    </script>
   `);
 }
 
-function renderJournalPost(slug: string): string {
-  return layout("Journal Post", `
-    <h1>Post: ${slug}</h1>
-    <p>Article content loading from Kapable Data API.</p>
+function renderJournalPost(slug: string): string | null {
+  const post = POSTS.find((p) => p.slug === slug);
+  if (!post) return null;
+
+  const displayDate = new Date(post.date).toLocaleDateString("en-CA", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
+  const pullQuotes: Record<Post["category"], string> = {
+    pedagogy:
+      "What would you play if you weren't afraid? Start there.",
+    performance_psychology:
+      "You must stop pretending in order to be truly heard.",
+    concert_reflections:
+      "The art is finding the threshold — where precision and presence become the same thing.",
+  };
+
+  const css = `
+    /* ── Journal post ── */
+    .post-back {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      margin-bottom: 2.5rem;
+      border-bottom: 1px solid transparent;
+    }
+    .post-back:hover { color: var(--ink); border-bottom-color: var(--gold); }
+    .post-header { margin-bottom: 2.5rem; }
+    .post-header h1 {
+      font-size: 2.4rem;
+      font-weight: normal;
+      line-height: 1.2;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+    .post-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .post-date {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+    }
+    .post-cat-tag {
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 0.15rem 0.55rem;
+    }
+    .post-divider {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 2rem 0 2.5rem;
+    }
+    .post-body { max-width: 680px; }
+    .post-body p { font-size: 1.05rem; line-height: 1.85; margin-bottom: 1.5rem; }
+    .post-body h2 {
+      font-size: 1.3rem;
+      font-weight: normal;
+      letter-spacing: 0.01em;
+      margin-top: 2.5rem;
+      margin-bottom: 0.85rem;
+      color: var(--ink);
+    }
+    .post-body strong { font-weight: 600; }
+    .post-body em { font-style: italic; }
+  `;
+
+  return layout(post.title, `
+    <style>${css}</style>
+    <a href="/journal" class="post-back">&larr; Back to Journal</a>
+
+    <div class="post-header">
+      <h1>${post.title}</h1>
+      <div class="post-meta-row">
+        <time class="post-date">${displayDate}</time>
+        <span class="post-cat-tag">${CATEGORY_LABELS[post.category]}</span>
+      </div>
+    </div>
+
+    <hr class="post-divider" />
+
+    <div class="post-body">
+      ${renderMarkdown(post.content)}
+    </div>
+
+    <div class="pull-quote">
+      <em>"${pullQuotes[post.category]}"</em>
+    </div>
   `);
 }
 
@@ -1037,7 +1398,7 @@ Bun.serve({
       if (pathname === "/journal") return renderJournal();
       if (pathname.startsWith("/journal/")) {
         const slug = pathname.slice("/journal/".length);
-        return renderJournalPost(slug);
+        return renderJournalPost(slug); // returns null if not found → 404
       }
       if (pathname === "/teaching") return renderTeaching();
       if (pathname === "/events") return renderEvents();
