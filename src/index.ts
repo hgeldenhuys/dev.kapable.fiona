@@ -87,6 +87,62 @@ const REPERTOIRE: Piece[] = [
   },
 ];
 
+// ─── Media / Video Data ───────────────────────────────────────────────────────
+// NOTE: YouTube embed IDs are placeholders — replace with real video IDs once available.
+// Format: https://www.youtube.com/embed/<VIDEO_ID>
+
+interface Video {
+  title: string;
+  description: string;
+  date?: string;
+  category: "live" | "studio" | "competition" | "street";
+  youtubeId: string | null; // null = placeholder display
+}
+
+const VIDEOS: Video[] = [
+  // ── Live Performances ──────────────────────────────────────────────────────
+  {
+    title: "Piano Concerto No. 4 in G major, Op. 58 — Beethoven",
+    description: "Live performance at Salle Claude Champagne, January 20, 2024",
+    date: "January 20, 2024",
+    category: "live",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+  {
+    title: "Art of Fugue: A Lecture-Recital",
+    description: "Live performance in Ottawa for the Doors Open for Music at Southminster series (2024)",
+    date: "2024",
+    category: "live",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+  {
+    title: "First Round at the International Livorno Competition",
+    description: "Sponsored by the Conseil des Arts et Lettres de Québec (CALQ)",
+    category: "competition",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+  // ── Studio Recordings ─────────────────────────────────────────────────────
+  {
+    title: "Bach–Busoni Chaconne in D minor, BWV 1004",
+    description: "Recorded at Orford Music",
+    category: "studio",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+  {
+    title: "DENSE by Julie Thériault",
+    description: "Recorded at Orford Music, in collaboration with Paul Çelebi",
+    category: "studio",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+  // ── Street / Informal ─────────────────────────────────────────────────────
+  {
+    title: "Street Performance — Beethoven's Appassionata Sonata",
+    description: "Beethoven's Appassionata Sonata on the streets of Montreal",
+    category: "street",
+    youtubeId: null, // TODO: replace with real YouTube ID
+  },
+];
+
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
 function layout(title: string, content: string, opts: { wide?: boolean } = {}): string {
@@ -728,10 +784,193 @@ function renderRepertoire(): string {
 }
 
 function renderListeningRoom(): string {
+  const categoryLabels: Record<Video["category"], string> = {
+    live: "Live Performance",
+    studio: "Studio Recording",
+    competition: "Competition",
+    street: "Street Performance",
+  };
+
+  let videoCards = "";
+  for (const video of VIDEOS) {
+    const label = categoryLabels[video.category];
+    const dateHtml = video.date ? `<p class="video-date">${video.date}</p>` : "";
+
+    const embedHtml = video.youtubeId
+      ? `<iframe
+          class="video-iframe"
+          src="https://www.youtube.com/embed/${video.youtubeId}"
+          title="${video.title}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        ></iframe>`
+      : `<div class="video-placeholder-inner">
+          <span class="play-icon">&#9654;</span>
+          <p class="placeholder-label">${video.title}</p>
+        </div>`;
+
+    videoCards += `
+    <article class="video-card" data-category="${video.category}">
+      <div class="video-embed-box">
+        ${embedHtml}
+      </div>
+      <div class="video-meta">
+        <span class="video-cat-tag">${label}</span>
+        <h2 class="video-title">${video.title}</h2>
+        <p class="video-desc">${video.description}</p>
+        ${dateHtml}
+      </div>
+    </article>`;
+  }
+
+  const css = `
+    /* ── Listening Room ── */
+    .lr-filter-bar {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 1.1rem 0;
+      margin-bottom: 2.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem 0.2rem;
+    }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.25rem;
+    }
+    .video-card {
+      border: 1px solid var(--rule);
+      border-radius: 4px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .video-embed-box {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 */
+      background: #1a1a1a;
+    }
+    .video-iframe,
+    .video-placeholder-inner {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    .video-placeholder-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: #1e1c18;
+      color: var(--gold);
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .play-icon {
+      font-size: 2.8rem;
+      line-height: 1;
+      opacity: 0.7;
+    }
+    .placeholder-label {
+      font-family: var(--serif);
+      font-size: 0.85rem;
+      font-style: italic;
+      color: #a09880;
+      line-height: 1.45;
+      margin: 0;
+    }
+    .video-meta {
+      padding: 1.25rem 1.4rem 1.4rem;
+    }
+    .video-cat-tag {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--gold-dark);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 0.15rem 0.55rem;
+      margin-bottom: 0.65rem;
+    }
+    .video-title {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: normal;
+      line-height: 1.35;
+      color: var(--ink);
+      margin-bottom: 0.55rem;
+    }
+    .video-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 0.4rem;
+    }
+    .video-date {
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      color: #b0a898;
+      letter-spacing: 0.06em;
+      margin: 0;
+    }
+    .video-count {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 720px) {
+      .video-grid { grid-template-columns: 1fr; }
+    }
+  `;
+
   return layout("Listening Room", `
-    <h1>Listening Room</h1>
-    <p>Videos and recordings.</p>
-  `);
+    <style>${css}</style>
+
+    <div class="page-header">
+      <h1>Listening Room</h1>
+      <p class="page-subtitle">Recordings, performances, and musical moments</p>
+    </div>
+
+    <div class="lr-filter-bar">
+      <button class="filter-btn active" data-lr-cat="all" onclick="lrFilter('all',this)">All</button>
+      <button class="filter-btn" data-lr-cat="live" onclick="lrFilter('live',this)">Live Performances</button>
+      <button class="filter-btn" data-lr-cat="studio" onclick="lrFilter('studio',this)">Studio Recordings</button>
+      <button class="filter-btn" data-lr-cat="competition" onclick="lrFilter('competition',this)">Competition</button>
+      <button class="filter-btn" data-lr-cat="street" onclick="lrFilter('street',this)">Street Performance</button>
+    </div>
+
+    <p class="video-count">${VIDEOS.length} videos</p>
+
+    <div class="video-grid">
+      ${videoCards}
+    </div>
+
+    <script>
+      function lrFilter(cat, btn) {
+        var cards = document.querySelectorAll('.video-card');
+        var visible = 0;
+        for (var i = 0; i < cards.length; i++) {
+          var show = cat === 'all' || cards[i].dataset.category === cat;
+          cards[i].style.display = show ? '' : 'none';
+          if (show) visible++;
+        }
+        var btns = document.querySelectorAll('[data-lr-cat]');
+        for (var j = 0; j < btns.length; j++) {
+          btns[j].classList.toggle('active', btns[j] === btn);
+        }
+        var countEl = document.querySelector('.video-count');
+        if (countEl) countEl.textContent = visible + ' video' + (visible !== 1 ? 's' : '');
+      }
+    </script>
+  `, { wide: true });
 }
 
 function renderJournal(): string {
