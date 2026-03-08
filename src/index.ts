@@ -335,14 +335,27 @@ function layout(title: string, content: string, opts: { wide?: boolean; descript
       --space-lg: 4rem;
     }
 
-    /* ── Base ── */
-    html { font-size: 17px; scroll-behavior: smooth; }
+    /* ── Typography & Refinement ── */
     body {
       font-family: var(--font-body);
       color: var(--ink);
       background: var(--bg);
       line-height: 1.7;
       -webkit-font-smoothing: antialiased;
+      font-feature-settings: 'kern' 1, 'liga' 1;
+    }
+    .small-caps {
+      font-variant-caps: small-caps;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Print Styles ── */
+    @media print {
+      .site-nav, .site-footer { display: none !important; }
+      body { color: #000; background: #fff; font-size: 11pt; }
+      main { max-width: 100% !important; padding: 0 !important; }
+      h1, h2, h3 { color: #000 !important; }
+      a { text-decoration: none !important; color: #000 !important; }
     }
 
     /* ── Nav ── */
