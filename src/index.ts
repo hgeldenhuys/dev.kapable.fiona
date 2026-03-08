@@ -1348,10 +1348,113 @@ function renderJournalPost(slug: string): string | null {
   `);
 }
 
+// ─── Testimonials Data ────────────────────────────────────────────────────────
+
+interface Testimonial {
+  name: string;
+  role: string;
+  text: string;
+}
+
+const TESTIMONIALS: Testimonial[] = [
+  {
+    name: "Anne-Sophie Van Royen",
+    role: "Private student",
+    text: "I am very fortunate to be one of Fiona's students. Not only is she a fabulous pianist, but her talents also extend far beyond the stage. She possesses profound musical knowledge, and thanks to her, I have gained valuable insights into harmonic progression and analysis, despite not having studied musical theory at a high level. As a teacher with exceptional pedagogical skills, she has an uncanny ability to select pieces that offer musical challenges to my adult mind, guiding me into repertoires I both enjoy and that push me beyond my comfort zone. We have tackled a diverse range of pieces, including works by Liszt, Schubert, and Couperin. Fiona taught me the importance of rigor in approaching each piece and how to impart expression and musicality. She is a truly exceptional teacher and an inspiration, thanks to her talent and unmatched teaching skills.",
+  },
+  {
+    name: "Emmanuelle Granger",
+    role: "Undergraduate student, Université de Montréal",
+    text: "Fiona a été ma professeure pour trois sessions à l'université. Grâce à son aide et à ses encouragements, mon interprétation musicale d'aujourd'hui est méconnaissable comparativement à mes débuts à ses côtés. Depuis mon Cégep, je n'ai jamais vécu une amélioration aussi exponentielle à l'intérieur d'une session qu'avec Fiona. Avec ses conseils, j'ai reçu les meilleures notes en piano que j'aurais pu imaginer et j'ai regagné confiance en mon jeu. Elle est aussi une personne captivante et une pianiste inspirante. Je suis très reconnaissante d'avoir eu la chance d'avoir été son élève pour ces trois sessions. Merci beaucoup pour tout Fiona!",
+  },
+  {
+    name: "Norman Kong",
+    role: "Private student",
+    text: "I am so lucky to have been one of Fiona's students for the past few years. It goes without saying she is a superb pianist; while her technical skill is formidable, what strikes me most is her musical maturity and the unique perspectives she brings to music. Many pianists can hit the right notes, but Fiona truly plays the music. I am fortunate that as her student, I get to learn not only about music, but about life. Good teachers teach you about the art but great teachers go beyond that. Fiona is a friend, a mentor and a role model. Thank you Fiona!",
+  },
+];
+
 function renderTeaching(): string {
+  let testimonialHtml = "";
+  for (const t of TESTIMONIALS) {
+    testimonialHtml += `
+    <div class="press-quote" style="margin-bottom: 2rem;">
+      <blockquote>"${t.text}"</blockquote>
+      <cite>— ${t.name}, ${t.role}</cite>
+    </div>`;
+  }
+
   return layout("Teaching", `
-    <h1>Teaching</h1>
-    <p>Fiona's approach to teaching and lessons.</p>
+    <section style="margin-bottom: 4rem;">
+      <h1>Teaching</h1>
+      <p class="pull-quote" style="text-align:left; padding: 1.5rem 0; border-top: none; margin-top: 1rem; margin-bottom: 2rem; font-size: 1.15rem;">
+        Finding your voice at the piano
+      </p>
+      <p>
+        Fiona believes in teaching the whole musician, not just technique. Her approach is shaped
+        by her own journey — overcoming performance anxiety, finding artistic courage, and learning
+        to inhabit music rather than merely execute it. In her studio, technical rigour and
+        expressive freedom are not opposites; they are companions.
+      </p>
+      <p>
+        Students are encouraged to be vulnerable, to take interpretive risks, and to discover what
+        only they can bring to a piece. The best lessons happen not when a student plays perfectly,
+        but when they play honestly.
+      </p>
+      <p>
+        Fiona is a faculty member at the <strong>Conservatoire de musique et d'art dramatique
+        de Montréal</strong>. She welcomes students of all levels for private lessons, including
+        sessions conducted online.
+      </p>
+    </section>
+
+    <section style="margin-bottom: 4rem;">
+      <h3>What Students Say</h3>
+      ${testimonialHtml}
+    </section>
+
+    <section>
+      <h2>Interested in Lessons?</h2>
+      <p style="margin-bottom: 2rem; color: var(--muted); font-family: var(--sans); font-size: 0.88rem; letter-spacing: 0.03em;">
+        Fill out the form below and Fiona will be in touch to discuss availability and fit.
+      </p>
+      <form method="POST" action="/api/inquiry" style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 560px;">
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="name" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">Name</label>
+          <input type="text" id="name" name="name" required
+            style="padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none;"
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="email" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">Email</label>
+          <input type="email" id="email" name="email" required
+            style="padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none;"
+          />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="level" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">Level</label>
+          <select id="level" name="level"
+            style="padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none; appearance: none; cursor: pointer;"
+          >
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Professional">Professional</option>
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+          <label for="message" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);">Message</label>
+          <textarea id="message" name="message" required rows="5"
+            style="padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none; resize: vertical;"
+          ></textarea>
+        </div>
+        <div>
+          <button type="submit"
+            style="padding: 0.75rem 2rem; background: var(--ink); color: var(--bg); font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; border: none; border-radius: 2px; cursor: pointer;"
+          >Send Inquiry</button>
+        </div>
+      </form>
+    </section>
   `);
 }
 
@@ -1387,6 +1490,31 @@ Bun.serve({
     if (pathname === "/health") {
       return new Response(JSON.stringify({ status: "ok", service: "fiona" }), {
         headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    // ── POST /api/inquiry ──────────────────────────────────────────────────
+    if (pathname === "/api/inquiry" && req.method === "POST") {
+      const body = await req.text();
+      const params = new URLSearchParams(body);
+      const name = params.get("name") ?? "";
+      const email = params.get("email") ?? "";
+      const level = params.get("level") ?? "";
+      const message = params.get("message") ?? "";
+
+      console.log("[inquiry]", { name, email, level, message });
+
+      const thankyou = layout("Thank You", `
+        <div style="text-align: center; padding: 4rem 0;">
+          <h1 style="font-size: 2rem; margin-bottom: 1.25rem;">Thank you, ${name}.</h1>
+          <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2.5rem;">
+            Your inquiry has been received. Fiona will be in touch soon.
+          </p>
+          <a href="/teaching" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dark); border-bottom: 1px solid var(--gold);">← Back to Teaching</a>
+        </div>
+      `);
+      return new Response(thankyou, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
       });
     }
 
