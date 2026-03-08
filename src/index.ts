@@ -282,14 +282,24 @@ function inlineMarkdown(text: string): string {
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
 
-function layout(title: string, content: string, opts: { wide?: boolean } = {}): string {
+function layout(title: string, content: string, opts: { wide?: boolean; description?: string; path?: string } = {}): string {
   const maxWidth = opts.wide ? "1100px" : "860px";
+  const desc = opts.description ?? "Canadian pianist Fiona Wu — soloist, teacher, and artist based in Montreal. Repertoire, recordings, events, and journal.";
+  const canonical = `https://fionawu.ca${opts.path ?? ""}`;
+  const pageTitle = title === "Home" ? "Fiona Wu, Pianist" : `${title} — Fiona Wu, Pianist`;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${title} — Fiona Wu, Pianist</title>
+  <title>${pageTitle}</title>
+  <meta name="description" content="${desc}" />
+  <meta property="og:title" content="${pageTitle}" />
+  <meta property="og:description" content="${desc}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="${canonical}" />
+  <link rel="canonical" href="${canonical}" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-family='Georgia,serif' fill='%23b8a88a'>♩</text></svg>" />
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -347,6 +357,10 @@ function layout(title: string, content: string, opts: { wide?: boolean } = {}): 
       transition: color 0.2s, border-color 0.2s;
     }
     .site-nav a:hover {
+      color: var(--ink);
+      border-bottom-color: var(--gold);
+    }
+    .site-nav a.nav-active {
       color: var(--ink);
       border-bottom-color: var(--gold);
     }
@@ -526,11 +540,22 @@ function layout(title: string, content: string, opts: { wide?: boolean } = {}): 
       .card-grid { grid-template-columns: 1fr; gap: 1rem; }
       .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
       .bio-sidebar { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 1.5rem; }
+      .contact-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+      .contact-grid aside { border-left: none !important; border-top: 1px solid var(--rule); padding-left: 0 !important; padding-top: 1.5rem; }
     }
     @media (max-width: 480px) {
       html { font-size: 16px; }
       .hero { padding: 3rem 0.5rem 2.5rem; }
       .hero h1 { font-size: 2rem; }
+    }
+
+    /* ── Print ── */
+    @media print {
+      .site-nav, .site-footer { display: none; }
+      body { color: #000; background: #fff; font-size: 12pt; }
+      a::after { content: " (" attr(href) ")"; font-size: 0.75em; color: #555; }
+      .site-nav a::after, .card a.cta::after { content: ""; }
+      main { max-width: 100%; padding: 0; }
     }
 
     /* ── Repertoire page ── */
@@ -670,14 +695,14 @@ function layout(title: string, content: string, opts: { wide?: boolean } = {}): 
 <body>
   <nav class="site-nav">
     <a href="/" class="brand">Fiona Wu</a>
-    <a href="/about">About</a>
-    <a href="/repertoire">Repertoire</a>
-    <a href="/listening-room">Listening Room</a>
-    <a href="/journal">Journal</a>
-    <a href="/teaching">Teaching</a>
-    <a href="/events">Events</a>
-    <a href="/press">Press</a>
-    <a href="/contact">Contact</a>
+    <a href="/about"${opts.path === "/about" ? ' class="nav-active"' : ""}>About</a>
+    <a href="/repertoire"${opts.path === "/repertoire" ? ' class="nav-active"' : ""}>Repertoire</a>
+    <a href="/listening-room"${opts.path === "/listening-room" ? ' class="nav-active"' : ""}>Listening Room</a>
+    <a href="/journal"${opts.path?.startsWith("/journal") ? ' class="nav-active"' : ""}>Journal</a>
+    <a href="/teaching"${opts.path === "/teaching" ? ' class="nav-active"' : ""}>Teaching</a>
+    <a href="/events"${opts.path === "/events" ? ' class="nav-active"' : ""}>Events</a>
+    <a href="/press"${opts.path === "/press" ? ' class="nav-active"' : ""}>Press</a>
+    <a href="/contact"${opts.path === "/contact" ? ' class="nav-active"' : ""}>Contact</a>
   </nav>
   <main>${content}</main>
   <footer class="site-footer">
@@ -695,6 +720,18 @@ function layout(title: string, content: string, opts: { wide?: boolean } = {}): 
 // ─── Pages ────────────────────────────────────────────────────────────────────
 
 function renderHome(): string {
+  const latestPost = [...POSTS].sort((a, b) => b.date.localeCompare(a.date))[0];
+  const today = new Date().toISOString().slice(0, 10);
+  const nextEvent = EVENTS.filter(e => e.date >= today).sort((a, b) => a.date.localeCompare(b.date))[0];
+
+  const journalCardBody = latestPost
+    ? `<p>${latestPost.excerpt}</p><a href="/journal/${latestPost.slug}" class="cta">Read: ${latestPost.title}</a>`
+    : `<p>Reflections on music, practice, performance anxiety, and the inner life of a performer.</p><a href="/journal" class="cta">Read the Journal</a>`;
+
+  const eventsCardBody = nextEvent
+    ? `<p>${nextEvent.title} — ${formatEventDate(nextEvent.date)}, ${nextEvent.venue}</p><a href="/events" class="cta">View Events</a>`
+    : `<p>Performances, masterclasses, and talks across North America and Europe.</p><a href="/events" class="cta">View Events</a>`;
+
   return layout("Home", `
     <section class="hero">
       <h1>Fiona Wu</h1>
@@ -716,13 +753,11 @@ function renderHome(): string {
     <div class="card-grid">
       <div class="card">
         <h3>Latest from the Journal</h3>
-        <p>Reflections on music, practice, performance anxiety, and the inner life of a performer.</p>
-        <a href="/journal" class="cta">Read the Journal</a>
+        ${journalCardBody}
       </div>
       <div class="card">
         <h3>Upcoming Events</h3>
-        <p>Performances, masterclasses, and talks across North America and Europe.</p>
-        <a href="/events" class="cta">View Events</a>
+        ${eventsCardBody}
       </div>
       <div class="card">
         <h3>Repertoire</h3>
@@ -730,7 +765,7 @@ function renderHome(): string {
         <a href="/repertoire" class="cta">Explore Repertoire</a>
       </div>
     </div>
-  `);
+  `, { path: "/" });
 }
 
 function renderAbout(): string {
@@ -768,6 +803,12 @@ function renderAbout(): string {
         <p>Fiona often asks her students: <em>What would you play if you weren't afraid?</em> It's
         a question she continues to ask herself — because she believes the paradox of great
         performance is that you must stop pretending in order to be truly heard.</p>
+
+        <p style="margin-top: 2rem; font-family: var(--sans); font-size: 0.82rem; letter-spacing: 0.04em; color: var(--muted);">
+          Read Fiona's reflections on performance and pedagogy in her
+          <a href="/journal">Journal</a>, or learn about her
+          <a href="/teaching">Teaching approach</a>.
+        </p>
       </div>
 
       <aside class="bio-sidebar">
@@ -803,7 +844,7 @@ function renderAbout(): string {
     <div class="featured-quote">
       <p>"True performance isn't pretense — it's presence."</p>
     </div>
-  `);
+  `, { path: "/about", description: "Biography, education, and artistic philosophy of Canadian pianist Fiona Wu — soloist, teacher, and laureate of international competitions." });
 }
 
 function renderRepertoire(): string {
@@ -879,7 +920,7 @@ function renderRepertoire(): string {
     </div>
 
     <script>
-      var filterState = { period: 'all', mood: 'all', composer: 'all' };
+      var filterState = { period: "all", mood: "all", composer: "all" };
 
       function applyFilters() {
         var cards = document.querySelectorAll('.piece-card');
@@ -917,7 +958,7 @@ function renderRepertoire(): string {
         }
       });
     </script>
-  `, { wide: true });
+  `, { wide: true, path: "/repertoire", description: "Fiona Wu's repertoire: Bach, Beethoven, Schubert, Liszt, and contemporary works. A living catalog of music performed and taught." });
 }
 
 function renderListeningRoom(): string {
@@ -1107,7 +1148,7 @@ function renderListeningRoom(): string {
         if (countEl) countEl.textContent = visible + ' video' + (visible !== 1 ? 's' : '');
       }
     </script>
-  `, { wide: true });
+  `, { wide: true, path: "/listening-room", description: "Watch Fiona Wu in live performances, studio recordings, and competition appearances. Piano performances on video." });
 }
 
 function renderJournal(activeCategory: string = "all"): string {
@@ -1240,7 +1281,7 @@ function renderJournal(activeCategory: string = "all"): string {
         }
       }
     </script>
-  `);
+  `, { path: "/journal", description: "Fiona Wu's journal — reflections on music, pedagogy, performance psychology, and the inner life of a pianist." });
 }
 
 function renderJournalPost(slug: string): string | null {
@@ -1345,7 +1386,7 @@ function renderJournalPost(slug: string): string | null {
     <div class="pull-quote">
       <em>"${pullQuotes[post.category]}"</em>
     </div>
-  `);
+  `, { path: `/journal/${post.slug}`, description: post.excerpt });
 }
 
 // ─── Testimonials Data ────────────────────────────────────────────────────────
@@ -1455,7 +1496,7 @@ function renderTeaching(): string {
         </div>
       </form>
     </section>
-  `);
+  `, { path: "/teaching", description: "Piano lessons with Fiona Wu — private instruction for all levels at the Conservatoire de Montréal, and online worldwide." });
 }
 
 // ─── Events Data ──────────────────────────────────────────────────────────────
@@ -1589,7 +1630,7 @@ function renderEvents(): string {
     ${emptyHtml}
     ${upcomingHtml}
     ${pastHtml}
-  `);
+  `, { path: "/events", description: "Upcoming and past performances, competitions, and lecture-recitals by pianist Fiona Wu." });
 }
 
 function renderPress(): string {
@@ -1680,7 +1721,7 @@ function renderPress(): string {
         </li>
       </ul>
     </section>
-  `);
+  `, { path: "/press", description: "Press materials, reviews, and awards for Canadian pianist Fiona Wu — bios, quotes, and competition history." });
 }
 
 function renderContact(): string {
@@ -1693,7 +1734,7 @@ function renderContact(): string {
       <p class="page-subtitle">For inquiries about performances, collaborations, lessons, or press</p>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 280px; gap: 5rem; align-items: start; margin-top: 2.5rem;">
+    <div class="contact-grid" style="display: grid; grid-template-columns: 1fr 280px; gap: 5rem; align-items: start; margin-top: 2.5rem;">
 
       <!-- ── Contact form ── -->
       <section>
@@ -1761,12 +1802,7 @@ function renderContact(): string {
       </aside>
     </div>
 
-    <style>
-      @media (max-width: 720px) {
-        .contact-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
-      }
-    </style>
-  `);
+  `, { path: "/contact", description: "Contact Fiona Wu for performance bookings, collaborations, press inquiries, or private piano lessons." });
 }
 
 // ─── Server ───────────────────────────────────────────────────────────────────
@@ -1880,10 +1916,21 @@ Bun.serve({
     })();
 
     if (html === null) {
-      return new Response(
-        layout("404 Not Found", "<h1>Page Not Found</h1><p><a href='/'>Return home</a></p>"),
-        { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } }
-      );
+      const notFound = layout("Page Not Found", `
+        <div style="text-align: center; padding: 5rem 1rem 4rem;">
+          <p style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.5rem;">404</p>
+          <h1 style="font-size: 2.4rem; font-weight: normal; margin-bottom: 1rem; letter-spacing: -0.01em;">The rest is silence.</h1>
+          <p style="color: var(--muted); font-size: 1.05rem; max-width: 400px; margin: 0 auto 2.5rem; line-height: 1.7;">
+            This page doesn't exist — but music is waiting elsewhere.
+          </p>
+          <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;">
+            <a href="/" style="color: var(--gold-dark); border-bottom: 1px solid var(--gold); padding-bottom: 1px; text-decoration: none;">Home</a>
+            <a href="/about" style="color: var(--gold-dark); border-bottom: 1px solid var(--gold); padding-bottom: 1px; text-decoration: none;">About</a>
+            <a href="/journal" style="color: var(--gold-dark); border-bottom: 1px solid var(--gold); padding-bottom: 1px; text-decoration: none;">Journal</a>
+          </div>
+        </div>
+      `);
+      return new Response(notFound, { status: 404, headers: { "Content-Type": "text/html; charset=utf-8" } });
     }
 
     return new Response(html, {
