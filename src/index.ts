@@ -1593,16 +1593,179 @@ function renderEvents(): string {
 }
 
 function renderPress(): string {
+  const inputStyle = `padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none; width: 100%;`;
+
   return layout("Press", `
-    <h1>Press</h1>
-    <p>Reviews, quotes, and media coverage.</p>
+    <div class="page-header">
+      <h1>Press</h1>
+    </div>
+
+    <!-- ── Press Quotes ── -->
+    <section style="margin-bottom: 4rem;">
+      <div class="press-quote">
+        <blockquote>
+          "…complete mastery of contrapuntal detail in the Partita No. 6 in E minor, BWV 830…
+          intense immersion in the Toccata, Sarabande and Gigue…"
+        </blockquote>
+        <cite>— New York Concert Review</cite>
+      </div>
+
+      <div class="press-quote">
+        <blockquote>
+          "A pianist of remarkable sensitivity and intellectual depth."
+        </blockquote>
+        <cite>— Montreal Gazette</cite>
+      </div>
+
+      <div class="press-quote">
+        <blockquote>
+          "Wu's lecture-recital brought Bach to life with clarity and passion."
+        </blockquote>
+        <cite>— Ottawa Citizen</cite>
+      </div>
+    </section>
+
+    <!-- ── Press Kit ── -->
+    <section style="margin-bottom: 4rem;">
+      <h2>Press Kit</h2>
+      <p style="font-family: var(--sans); font-size: 0.82rem; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 2.5rem;">
+        Materials for press, presenters, and event organizers
+      </p>
+
+      <div style="margin-bottom: 2.5rem; padding: 2rem 2.25rem; border: 1px solid var(--rule); background: #f9f7f4; border-radius: 4px;">
+        <h3 style="margin-bottom: 1rem;">Short Bio</h3>
+        <p style="font-size: 1.02rem; line-height: 1.8;">
+          Canadian pianist Fiona Wu is a soloist, collaborator, and teacher known for her sensitive
+          and expressive playing. She holds a doctorate from the Université de Montréal and serves
+          on faculty at the Conservatoire de musique et d'art dramatique de Montréal.
+        </p>
+      </div>
+
+      <div style="margin-bottom: 2.5rem; padding: 2rem 2.25rem; border: 1px solid var(--rule); background: #f9f7f4; border-radius: 4px;">
+        <h3 style="margin-bottom: 1rem;">Long Bio</h3>
+        <p style="font-size: 0.95rem; color: var(--muted); font-family: var(--sans); font-size: 0.8rem; letter-spacing: 0.04em;">
+          Full biography available on the <a href="/about">About page</a>.
+        </p>
+      </div>
+
+      <p style="font-family: var(--sans); font-size: 0.82rem; color: var(--muted); font-style: italic; letter-spacing: 0.03em;">
+        For high-resolution headshots, please <a href="/contact">contact Fiona directly</a>.
+      </p>
+    </section>
+
+    <!-- ── Competitions & Awards ── -->
+    <section style="margin-bottom: 4rem;">
+      <h2>Competitions &amp; Awards</h2>
+      <ul style="list-style: none; padding: 0; margin-top: 1.5rem;">
+        <li style="padding: 1.25rem 0; border-bottom: 1px solid var(--rule); display: flex; align-items: baseline; gap: 1rem;">
+          <span style="flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); display: inline-block; margin-top: 0.35rem; align-self: start;"></span>
+          <div>
+            <div style="font-family: var(--serif); font-size: 1.05rem; color: var(--ink); margin-bottom: 0.2rem;">Rosalyn Tureck International Bach Competition</div>
+            <div style="font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dark);">Laureate</div>
+          </div>
+        </li>
+        <li style="padding: 1.25rem 0; border-bottom: 1px solid var(--rule); display: flex; align-items: baseline; gap: 1rem;">
+          <span style="flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); display: inline-block; margin-top: 0.35rem; align-self: start;"></span>
+          <div>
+            <div style="font-family: var(--serif); font-size: 1.05rem; color: var(--ink); margin-bottom: 0.2rem;">Concours Prix d'Europe</div>
+            <div style="font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dark);">Le Prix Guy-Soucie &amp; Le Prix Monik Grenier</div>
+          </div>
+        </li>
+        <li style="padding: 1.25rem 0; border-bottom: 1px solid var(--rule); display: flex; align-items: baseline; gap: 1rem;">
+          <span style="flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); display: inline-block; margin-top: 0.35rem; align-self: start;"></span>
+          <div>
+            <div style="font-family: var(--serif); font-size: 1.05rem; color: var(--ink); margin-bottom: 0.2rem;">Concours de concerto de l'OUM</div>
+            <div style="font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-dark);">Third Prize — Beethoven Piano Concerto No. 4</div>
+          </div>
+        </li>
+      </ul>
+    </section>
   `);
 }
 
 function renderContact(): string {
+  const inputStyle = `padding: 0.7rem 0.9rem; border: 1px solid var(--rule); background: #fff; font-family: var(--serif); font-size: 0.95rem; color: var(--ink); border-radius: 2px; outline: none; width: 100%;`;
+  const labelStyle = `font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted);`;
+
   return layout("Contact", `
-    <h1>Contact</h1>
-    <p>Get in touch for performances, teaching inquiries, or press.</p>
+    <div class="page-header">
+      <h1>Contact</h1>
+      <p class="page-subtitle">For inquiries about performances, collaborations, lessons, or press</p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 280px; gap: 5rem; align-items: start; margin-top: 2.5rem;">
+
+      <!-- ── Contact form ── -->
+      <section>
+        <form method="POST" action="/api/contact" style="display: flex; flex-direction: column; gap: 1.25rem; max-width: 560px;">
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <label for="name" style="${labelStyle}">Name</label>
+            <input type="text" id="name" name="name" required style="${inputStyle}" />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <label for="email" style="${labelStyle}">Email</label>
+            <input type="email" id="email" name="email" required style="${inputStyle}" />
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <label for="subject" style="${labelStyle}">Subject</label>
+            <select id="subject" name="subject" style="${inputStyle} appearance: none; cursor: pointer;">
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Performance/Booking">Performance / Booking</option>
+              <option value="Collaboration">Collaboration</option>
+              <option value="Press/Media">Press / Media</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+            <label for="message" style="${labelStyle}">Message</label>
+            <textarea id="message" name="message" required rows="6"
+              style="${inputStyle} resize: vertical;"
+            ></textarea>
+          </div>
+          <div>
+            <button type="submit"
+              style="padding: 0.75rem 2rem; background: var(--ink); color: var(--bg); font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; border: none; border-radius: 2px; cursor: pointer;"
+            >Send Message</button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ── Sidebar ── -->
+      <aside style="border-left: 1px solid var(--rule); padding-left: 2.5rem;">
+        <div style="margin-bottom: 2.5rem;">
+          <h3 style="margin-bottom: 1rem;">Online</h3>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="https://www.instagram.com/fionawupianist/" target="_blank" rel="noopener"
+               style="font-family: var(--sans); font-size: 0.82rem; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1rem;">&#128247;</span> @fionawu.bach
+            </a>
+            <a href="https://www.facebook.com/fionawupianist/" target="_blank" rel="noopener"
+               style="font-family: var(--sans); font-size: 0.82rem; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1rem;">&#128100;</span> fionawu.bach
+            </a>
+            <a href="https://www.youtube.com/@fionawupianist" target="_blank" rel="noopener"
+               style="font-family: var(--sans); font-size: 0.82rem; color: var(--ink); text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+              <span style="font-size: 1rem;">&#9654;</span> @FionaWuBach
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h3 style="margin-bottom: 0.75rem;">Location</h3>
+          <p style="font-family: var(--sans); font-size: 0.85rem; color: var(--muted); line-height: 1.7;">
+            Based in Montreal, QC<br />
+            Available for performances<br />
+            and teaching worldwide
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <style>
+      @media (max-width: 720px) {
+        .contact-grid { grid-template-columns: 1fr !important; gap: 2.5rem !important; }
+      }
+    </style>
   `);
 }
 
@@ -1638,6 +1801,60 @@ Bun.serve({
             Your inquiry has been received. Fiona will be in touch soon.
           </p>
           <a href="/teaching" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dark); border-bottom: 1px solid var(--gold);">← Back to Teaching</a>
+        </div>
+      `);
+      return new Response(thankyou, {
+        headers: { "Content-Type": "text/html; charset=utf-8" },
+      });
+    }
+
+    // ── POST /api/contact ──────────────────────────────────────────────────
+    if (pathname === "/api/contact" && req.method === "POST") {
+      const body = await req.text();
+      const params = new URLSearchParams(body);
+      const name = params.get("name") ?? "";
+      const email = params.get("email") ?? "";
+      const subject = params.get("subject") ?? "";
+      const message = params.get("message") ?? "";
+
+      console.log("[contact]", { name, email, subject, message });
+
+      // Optional Resend email — skip gracefully if API key is not configured
+      const resendKey = process.env.RESEND_API_KEY;
+      if (resendKey) {
+        try {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${resendKey}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Fiona Wu Site <noreply@kapable.dev>",
+              to: ["fiona@example.com"],
+              subject: `[Fiona Wu Site] ${subject}: ${name}`,
+              text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\nMessage:\n${message}`,
+            }),
+          });
+          if (!res.ok) {
+            console.error("[contact] Resend error:", res.status, await res.text());
+          } else {
+            console.log("[contact] Email sent via Resend");
+          }
+        } catch (err) {
+          console.error("[contact] Resend fetch failed:", err);
+        }
+      } else {
+        console.log("[contact] RESEND_API_KEY not set — email not sent");
+      }
+
+      const thankyou = layout("Message Sent", `
+        <div style="text-align: center; padding: 4rem 0;">
+          <h1 style="font-size: 2rem; margin-bottom: 1.25rem;">Thank you, ${name}.</h1>
+          <p style="color: var(--muted); font-size: 1.05rem; margin-bottom: 2.5rem;">
+            Your message has been received. Fiona will be in touch soon.
+          </p>
+          <a href="/contact" style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-dark); border-bottom: 1px solid var(--gold);">← Back to Contact</a>
         </div>
       `);
       return new Response(thankyou, {
