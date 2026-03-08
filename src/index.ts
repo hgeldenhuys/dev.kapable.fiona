@@ -1458,10 +1458,137 @@ function renderTeaching(): string {
   `);
 }
 
+// ─── Events Data ──────────────────────────────────────────────────────────────
+
+interface PerformanceEvent {
+  title: string;
+  date: string; // ISO 8601: YYYY-MM-DD
+  venue: string;
+  city: string;
+  program: string;
+  description?: string;
+}
+
+const EVENTS: PerformanceEvent[] = [
+  {
+    title: "Bach and the Inner Voice: A Recital",
+    date: "2026-05-15",
+    venue: "Salle Bourgie",
+    city: "Montreal, QC",
+    program: "J.S. Bach — Partita No. 6 in E minor, BWV 830\nJ.S. Bach/F. Busoni — Chaconne in D minor, BWV 1004\nF. Schubert — Impromptu in G-flat major, D. 899 No. 3",
+    description: "An evening exploring Bach's extraordinary emotional architecture, bookended by Schubert's singing lyricism.",
+  },
+  {
+    title: "Beethoven Piano Concerto No. 4 with OUM",
+    date: "2024-01-20",
+    venue: "Salle Claude Champagne",
+    city: "Montreal, QC",
+    program: "L. van Beethoven — Piano Concerto No. 4 in G major, Op. 58\nWith the Orchestre de l'Université de Montréal",
+  },
+  {
+    title: "Art of Fugue: A Lecture-Recital",
+    date: "2024-03-15",
+    venue: "Southminster United Church",
+    city: "Ottawa, ON",
+    program: "J.S. Bach — The Art of Fugue, BWV 1080\nDoors Open for Music at Southminster series",
+  },
+  {
+    title: "International Livorno Piano Competition",
+    date: "2023-10-31",
+    venue: "Teatro Goldoni",
+    city: "Livorno, Italy",
+    program: "Competition repertoire\nSponsored by CALQ",
+  },
+  {
+    title: "DENSE — New Music Premiere",
+    date: "2023-09-20",
+    venue: "Orford Music",
+    city: "Orford, QC",
+    program: "Julie Thériault — DENSE\nIn collaboration with Paul Çelebi",
+  },
+];
+
+function formatEventDate(isoDate: string): string {
+  const d = new Date(isoDate + "T12:00:00Z"); // noon UTC avoids timezone drift
+  return d.toLocaleDateString("en-CA", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
+}
+
+function formatEventDateShort(isoDate: string): string {
+  const d = new Date(isoDate + "T12:00:00Z");
+  return d.toLocaleDateString("en-CA", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" });
+}
+
 function renderEvents(): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const upcoming = EVENTS.filter(e => e.date >= today).sort((a, b) => a.date.localeCompare(b.date));
+  const past = EVENTS.filter(e => e.date < today).sort((a, b) => b.date.localeCompare(a.date));
+
+  let upcomingHtml = "";
+  if (upcoming.length > 0) {
+    let cards = "";
+    for (const ev of upcoming) {
+      const programLines = ev.program.split("\n").map(l => `<span style="display:block;">${l}</span>`).join("");
+      cards += `
+      <div style="background: #f9f7f4; border: 1px solid var(--rule); border-left: 3px solid var(--ink); padding: 2rem 2.25rem; margin-bottom: 2rem;">
+        <div style="font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem;">
+          ${formatEventDate(ev.date)}
+        </div>
+        <h2 style="margin: 0 0 0.4rem; font-size: 1.45rem; line-height: 1.25;">${ev.title}</h2>
+        <div style="font-family: var(--sans); font-size: 0.82rem; color: var(--muted); margin-bottom: 1.25rem; letter-spacing: 0.04em;">
+          ${ev.venue} &mdash; ${ev.city}
+        </div>
+        <div style="font-family: var(--serif); font-size: 0.92rem; color: var(--ink); opacity: 0.75; line-height: 1.7; margin-bottom: ${ev.description ? "1rem" : "0"};">
+          ${programLines}
+        </div>
+        ${ev.description ? `<p style="font-style: italic; font-family: var(--serif); font-size: 0.92rem; color: var(--muted); margin: 0; line-height: 1.65;">"${ev.description}"</p>` : ""}
+      </div>`;
+    }
+    upcomingHtml = `
+    <section style="margin-bottom: 4rem;">
+      <h2 style="margin-bottom: 1.5rem;">Upcoming</h2>
+      ${cards}
+    </section>`;
+  }
+
+  let pastHtml = "";
+  if (past.length > 0) {
+    let rows = "";
+    for (const ev of past) {
+      const programLines = ev.program.split("\n").map(l => `<span style="display:block;">${l}</span>`).join("");
+      rows += `
+      <div style="display: flex; gap: 2rem; padding: 1.5rem 0 1.5rem 1.5rem; border-left: 1px solid var(--rule); position: relative;">
+        <div style="position: absolute; left: -4px; top: 1.9rem; width: 7px; height: 7px; border-radius: 50%; background: var(--rule);"></div>
+        <div style="min-width: 110px; flex-shrink: 0; font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding-top: 0.15rem; line-height: 1.5;">
+          ${formatEventDateShort(ev.date)}
+        </div>
+        <div style="flex: 1;">
+          <div style="font-family: var(--serif); font-size: 1.05rem; font-weight: 500; margin-bottom: 0.25rem;">${ev.title}</div>
+          <div style="font-family: var(--sans); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; letter-spacing: 0.03em;">${ev.venue} &mdash; ${ev.city}</div>
+          <div style="font-family: var(--serif); font-size: 0.88rem; color: var(--ink); opacity: 0.65; line-height: 1.65;">${programLines}</div>
+        </div>
+      </div>`;
+    }
+    pastHtml = `
+    <section>
+      <h2 style="margin-bottom: 1.75rem;">Past Performances</h2>
+      <div style="margin-left: 0.25rem;">
+        ${rows}
+      </div>
+    </section>`;
+  }
+
+  const emptyHtml = upcoming.length === 0 && past.length === 0
+    ? `<p style="color: var(--muted); font-family: var(--sans); font-size: 0.88rem;">No events listed at this time.</p>`
+    : "";
+
   return layout("Events", `
-    <h1>Events</h1>
-    <p>Upcoming performances and concerts.</p>
+    <h1 style="margin-bottom: 0.5rem;">Events</h1>
+    <p class="pull-quote" style="text-align:left; padding: 1.5rem 0; border-top: none; margin-top: 1rem; margin-bottom: 3rem; font-size: 1.1rem; color: var(--muted);">
+      Performances, competitions, and premieres
+    </p>
+    ${emptyHtml}
+    ${upcomingHtml}
+    ${pastHtml}
   `);
 }
 
